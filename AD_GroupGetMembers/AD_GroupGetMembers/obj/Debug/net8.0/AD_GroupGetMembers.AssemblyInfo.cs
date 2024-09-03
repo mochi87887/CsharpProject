@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AD_GroupGetMembers")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a602f6f4afd4934aa3c825e691716173f6f5d7c8")]
 [assembly: System.Reflection.AssemblyProductAttribute("AD_GroupGetMembers")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AD_GroupGetMembers")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

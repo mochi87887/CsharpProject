@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AD_GroupGetMembers
-build_property.ProjectDir = C:\Users\Administrator\Downloads\AD_GroupGetMembers\AD_GroupGetMembers\
+build_property.ProjectDir = C:\Users\2405067\Documents\Csharp\AD_GroupGetMembers\AD_GroupGetMembers\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
