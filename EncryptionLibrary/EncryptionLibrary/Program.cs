@@ -17,6 +17,7 @@ class Program
             Console.WriteLine("請選擇功能:");
             Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
             Console.WriteLine("2. 使用匯入的金鑰加密內容");
+            Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
             Console.WriteLine("0. 關閉程式");
             Console.Write("請輸入選項: ");
             string? choice = Console.ReadLine();
@@ -28,6 +29,9 @@ class Program
                     break;
                 case "2":
                     ImportKeysAndEncryptData();
+                    break;
+                case "3":
+                    PasteKeysAndDecryptData();
                     break;
                 case "0":
                     return;
@@ -117,9 +121,44 @@ class Program
         string encryptedData = RSAEncryption.Encrypt(data, publicKey);
         Console.WriteLine($"加密後的內容: {encryptedData}");
 
+        // 將輸入的內容和加密後的內容寫入txt檔案
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine("輸入的內容:");
+        sb.AppendLine(data);
+        sb.AppendLine();
+        sb.AppendLine("加密後的內容:");
+        sb.AppendLine(encryptedData);
+
+        File.AppendAllText(filePath, sb.ToString());
+        Console.WriteLine("加密內容已儲存到 " + filePath);
+    }
+
+    static void PasteKeysAndDecryptData()
+    {
+        // 輸入公鑰和私鑰
+        Console.WriteLine("請貼上公鑰:");
+        publicKey = Console.ReadLine()?.Trim();
+        Console.WriteLine("請貼上私鑰:");
+        privateKey = Console.ReadLine()?.Trim();
+
+        if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(privateKey))
+        {
+            Console.WriteLine("公鑰和私鑰不能為空");
+            return;
+        }
+
+        // 輸入已加密的內容
+        Console.WriteLine("請輸入已加密的內容:");
+        string? encryptedData = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(encryptedData))
+        {
+            Console.WriteLine("已加密的內容不能為空");
+            return;
+        }
+
         // 解密
         string decryptedData = RSAEncryption.Decrypt(encryptedData, privateKey);
         Console.WriteLine($"解密後的內容: {decryptedData}");
     }
 }
-
