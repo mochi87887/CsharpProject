@@ -6,10 +6,8 @@ using EncryptionLibrary;
 
 class Program
 {
-    private static string? publicKey1;
-    private static string? privateKey1;
-    private static string? publicKey2;
-    private static string? privateKey2;
+    private static string? publicKey;
+    private static string? privateKey;
 
     [STAThread]
     static void Main(string[] args)
@@ -19,8 +17,7 @@ class Program
             Console.WriteLine("請選擇功能:");
             Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
             Console.WriteLine("2. 使用匯入的金鑰加密內容");
-            Console.WriteLine("3. 使用公鑰解密內容");
-            Console.WriteLine("4. 使用私鑰解密內容");
+            Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
             Console.WriteLine("0. 關閉程式");
             Console.Write("請輸入選項: ");
             string? choice = Console.ReadLine();
@@ -34,46 +31,32 @@ class Program
                     ImportKeysAndEncryptData();
                     break;
                 case "3":
-                    DecryptWithPublicKey();
-                    break;
-                case "4":
-                    DecryptWithPrivateKey();
+                    PasteKeysAndDecryptData();
                     break;
                 case "0":
                     return;
                 default:
                     Console.WriteLine("無效的選項，請重新輸入。");
+                    Console.WriteLine();
                     break;
             }
         }
     }
 
-
     static void GenerateAndExportRSAKeys()
     {
-        using (var rsa1 = new RSACryptoServiceProvider(2048))
-        using (var rsa2 = new RSACryptoServiceProvider(2048))
+        using (var rsa = new RSACryptoServiceProvider(2048))
         {
-            // 取得第一組公鑰和私鑰
-            publicKey1 = Convert.ToBase64String(rsa1.ExportRSAPublicKey());
-            privateKey1 = Convert.ToBase64String(rsa1.ExportRSAPrivateKey());
-
-            // 取得第二組公鑰和私鑰
-            publicKey2 = Convert.ToBase64String(rsa2.ExportRSAPublicKey());
-            privateKey2 = Convert.ToBase64String(rsa2.ExportRSAPrivateKey());
+            // 取得公鑰和私鑰
+            publicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
+            privateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
 
             // 輸出到控制台
-            Console.WriteLine("第一組公鑰:");
-            Console.WriteLine(publicKey1);
+            Console.WriteLine("公鑰:");
+            Console.WriteLine(publicKey);
             Console.WriteLine();
-            Console.WriteLine("第一組私鑰:");
-            Console.WriteLine(privateKey1);
-            Console.WriteLine();
-            Console.WriteLine("第二組公鑰:");
-            Console.WriteLine(publicKey2);
-            Console.WriteLine();
-            Console.WriteLine("第二組私鑰:");
-            Console.WriteLine(privateKey2);
+            Console.WriteLine("私鑰:");
+            Console.WriteLine(privateKey);
 
             // 固定儲存位置到下載資料夾，並包含時間戳記
             string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
@@ -82,23 +65,17 @@ class Program
 
             // 將內容寫入txt檔案
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("第一組公鑰:");
-            sb.AppendLine(publicKey1);
+            sb.AppendLine("公鑰:");
+            sb.AppendLine(publicKey);
             sb.AppendLine();
-            sb.AppendLine("第一組私鑰:");
-            sb.AppendLine(privateKey1);
-            sb.AppendLine();
-            sb.AppendLine("第二組公鑰:");
-            sb.AppendLine(publicKey2);
-            sb.AppendLine();
-            sb.AppendLine("第二組私鑰:");
-            sb.AppendLine(privateKey2);
+            sb.AppendLine("私鑰:");
+            sb.AppendLine(privateKey);
 
             File.WriteAllText(filePath, sb.ToString());
             Console.WriteLine("金鑰已儲存到 " + filePath);
+            Console.WriteLine();
         }
     }
-
 
     static void ImportKeysAndEncryptData()
     {
@@ -109,6 +86,7 @@ class Program
         if (string.IsNullOrEmpty(fileName))
         {
             Console.WriteLine("檔案名稱不能為空");
+            Console.WriteLine();
             return;
         }
 
@@ -118,27 +96,22 @@ class Program
         if (!File.Exists(filePath))
         {
             Console.WriteLine("檔案不存在");
+            Console.WriteLine();
             return;
         }
 
         string[] keys = File.ReadAllLines(filePath);
-        if (keys.Length >= 8)
+        if (keys.Length >= 4)
         {
-            publicKey1 = keys[1].Trim();
-            privateKey1 = keys[3].Trim();
-            publicKey2 = keys[5].Trim();
-            privateKey2 = keys[7].Trim();
+            publicKey = keys[1].Trim();
+            privateKey = keys[3].Trim();
         }
         else
         {
             Console.WriteLine("金鑰檔案格式不正確。");
+            Console.WriteLine();
             return;
         }
-
-        Console.WriteLine("請選擇加密方式:");
-        Console.WriteLine("1. 使用第一組公鑰加密");
-        Console.WriteLine("2. 使用第二組私鑰加密");
-        string? encryptionChoice = Console.ReadLine();
 
         Console.WriteLine("請輸入要加密的內容:");
         string? data = Console.ReadLine();
@@ -146,26 +119,12 @@ class Program
         if (data == null)
         {
             Console.WriteLine("輸入的內容不能為空");
+            Console.WriteLine();
             return;
         }
 
-        string encryptedData;
-        if (encryptionChoice == "1")
-        {
-            // 使用第一組公鑰加密
-            encryptedData = RSAEncryption.EncryptWithPublicKey(data, publicKey1);
-        }
-        else if (encryptionChoice == "2")
-        {
-            // 使用第二組私鑰加密
-            encryptedData = RSAEncryption.EncryptWithPrivateKey(data, privateKey2);
-        }
-        else
-        {
-            Console.WriteLine("無效的選項，請重新輸入。");
-            return;
-        }
-
+        // 加密
+        string encryptedData = RSAEncryption.Encrypt(data, publicKey);
         Console.WriteLine($"加密後的內容: {encryptedData}");
 
         // 將輸入的內容和加密後的內容寫入txt檔案
@@ -181,59 +140,38 @@ class Program
         Console.WriteLine();
     }
 
-
-    static void DecryptWithPublicKey()
+    static void PasteKeysAndDecryptData()
     {
-        // 輸入公鑰
+        // 輸入公鑰和私鑰
         Console.WriteLine("請貼上公鑰:");
-        publicKey1 = Console.ReadLine()?.Trim();
-
-        if (string.IsNullOrEmpty(publicKey1))
-        {
-            Console.WriteLine("公鑰不能為空");
-            return;
-        }
-
-        // 輸入已加密的內容
-        Console.WriteLine("請輸入已加密的內容:");
-        string? encryptedData = Console.ReadLine();
-
-        if (string.IsNullOrEmpty(encryptedData))
-        {
-            Console.WriteLine("已加密的內容不能為空");
-            return;
-        }
-
-        // 解密
-        string decryptedData = RSAEncryption.DecryptWithPublicKey(encryptedData, publicKey1);
-        Console.WriteLine($"解密後的內容: {decryptedData}");
-    }
-
-
-    static void DecryptWithPrivateKey()
-    {
-        // 輸入私鑰
+        publicKey = Console.ReadLine()?.Trim();
+        Console.WriteLine();
         Console.WriteLine("請貼上私鑰:");
-        privateKey1 = Console.ReadLine()?.Trim();
+        privateKey = Console.ReadLine()?.Trim();
+        Console.WriteLine();
 
-        if (string.IsNullOrEmpty(privateKey1))
+        if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(privateKey))
         {
-            Console.WriteLine("私鑰不能為空");
+            Console.WriteLine("公鑰和私鑰不能為空");
+            Console.WriteLine();
             return;
         }
 
         // 輸入已加密的內容
         Console.WriteLine("請輸入已加密的內容:");
+        Console.WriteLine();
         string? encryptedData = Console.ReadLine();
 
         if (string.IsNullOrEmpty(encryptedData))
         {
             Console.WriteLine("已加密的內容不能為空");
+            Console.WriteLine();
             return;
         }
 
         // 解密
-        string decryptedData = RSAEncryption.DecryptWithPrivateKey(encryptedData, privateKey1);
+        string decryptedData = RSAEncryption.Decrypt(encryptedData, privateKey);
         Console.WriteLine($"解密後的內容: {decryptedData}");
+        Console.WriteLine();
     }
 }
