@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using EncryptionLibrary;
@@ -8,13 +9,14 @@ class Program
     private static string? publicKey;
     private static string? privateKey;
 
+    [STAThread]
     static void Main(string[] args)
     {
         while (true)
         {
             Console.WriteLine("請選擇功能:");
-            Console.WriteLine("1. 生成RSA金鑰");
-            Console.WriteLine("2. 使用生成的金鑰加密內容");
+            Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
+            Console.WriteLine("2. 使用匯入的金鑰加密內容");
             Console.WriteLine("0. 關閉程式");
             Console.Write("請輸入選項: ");
             string? choice = Console.ReadLine();
@@ -22,10 +24,10 @@ class Program
             switch (choice)
             {
                 case "1":
-                    GenerateRSAKeys();
+                    GenerateAndExportRSAKeys();
                     break;
                 case "2":
-                    EncryptAndDecryptData();
+                    ImportKeysAndEncryptData();
                     break;
                 case "0":
                     return;
@@ -36,7 +38,7 @@ class Program
         }
     }
 
-    static void GenerateRSAKeys()
+    static void GenerateAndExportRSAKeys()
     {
         using (var rsa = new RSACryptoServiceProvider(2048))
         {
@@ -50,14 +52,46 @@ class Program
             Console.WriteLine();
             Console.WriteLine("私鑰:");
             Console.WriteLine(privateKey);
+
+            // 固定儲存位置到下載資料夾
+            string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+            string filePath = Path.Combine(downloadFolder, "RSAKeys.txt");
+
+            File.WriteAllText(filePath, $"PublicKey:{publicKey}\nPrivateKey:{privateKey}");
+            Console.WriteLine("金鑰已儲存到 " + filePath);
         }
     }
 
-    static void EncryptAndDecryptData()
+    static void ImportKeysAndEncryptData()
     {
-        if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(privateKey))
+        // 輸入下載資料夾中要匯入的txt檔案名稱
+        Console.WriteLine("請輸入下載資料夾中要匯入的txt檔案名稱:");
+        string? fileName = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(fileName))
         {
-            Console.WriteLine("請先生成RSA金鑰 (選擇功能 1)");
+            Console.WriteLine("檔案名稱不能為空");
+            return;
+        }
+
+        string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+        string filePath = Path.Combine(downloadFolder, fileName);
+
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine("檔案不存在");
+            return;
+        }
+
+        string[] keys = File.ReadAllLines(filePath);
+        if (keys.Length == 2)
+        {
+            publicKey = keys[0].Replace("PublicKey:", "");
+            privateKey = keys[1].Replace("PrivateKey:", "");
+        }
+        else
+        {
+            Console.WriteLine("金鑰檔案格式不正確。");
             return;
         }
 
