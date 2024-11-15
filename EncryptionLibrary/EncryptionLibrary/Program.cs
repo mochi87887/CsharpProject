@@ -53,11 +53,20 @@ class Program
             Console.WriteLine("私鑰:");
             Console.WriteLine(privateKey);
 
-            // 固定儲存位置到下載資料夾
+            // 固定儲存位置到下載資料夾，並包含時間戳記
             string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-            string filePath = Path.Combine(downloadFolder, "RSAKeys.txt");
+            string fileName = $"RSAKeys_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+            string filePath = Path.Combine(downloadFolder, fileName);
 
-            File.WriteAllText(filePath, $"PublicKey:{publicKey}\nPrivateKey:{privateKey}");
+            // 將內容寫入txt檔案
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("公鑰:");
+            sb.AppendLine(publicKey);
+            sb.AppendLine();
+            sb.AppendLine("私鑰:");
+            sb.AppendLine(privateKey);
+
+            File.WriteAllText(filePath, sb.ToString());
             Console.WriteLine("金鑰已儲存到 " + filePath);
         }
     }
@@ -84,10 +93,10 @@ class Program
         }
 
         string[] keys = File.ReadAllLines(filePath);
-        if (keys.Length == 2)
+        if (keys.Length >= 4)
         {
-            publicKey = keys[0].Replace("PublicKey:", "");
-            privateKey = keys[1].Replace("PrivateKey:", "");
+            publicKey = keys[1].Trim();
+            privateKey = keys[3].Trim();
         }
         else
         {
@@ -113,3 +122,4 @@ class Program
         Console.WriteLine($"解密後的內容: {decryptedData}");
     }
 }
+
