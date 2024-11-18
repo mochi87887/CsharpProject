@@ -15,9 +15,12 @@ class Program
         while (true)
         {
             Console.WriteLine("請選擇功能:");
-            Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
-            Console.WriteLine("2. 使用匯入的金鑰加密內容");
-            Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
+            //Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
+            //Console.WriteLine("2. 使用匯入的金鑰加密內容");
+            //Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
+            //Console.WriteLine("4. 貼上私鑰和密文進行解密");
+            Console.WriteLine("1. 生成金鑰並匯出成txt檔");
+            Console.WriteLine("2. 匯入檔案並加密內容");
             Console.WriteLine("4. 貼上私鑰和密文進行解密");
             Console.WriteLine("0. 關閉程式");
             Console.Write("請輸入選項: ");
@@ -31,9 +34,9 @@ class Program
                 case "2":
                     ImportKeysAndEncryptData();
                     break;
-                case "3":
-                    PasteKeysAndDecryptData();
-                    break;
+                //case "3":
+                //    PasteKeysAndDecryptData();
+                //    break;
                 case "4":
                     PastePrivateKeyAndDecryptData();
                     break;
@@ -83,10 +86,11 @@ class Program
     }
 
     // 數字2
+    // 數字2
     static void ImportKeysAndEncryptData()
     {
         // 輸入下載資料夾中要匯入的txt檔案名稱
-        Console.WriteLine("請輸入下載資料夾中要匯入的txt檔案名稱:");
+        Console.WriteLine("請輸入下載資料夾中要匯入的txt檔案名稱（不含副檔名）:");
         string? fileName = Console.ReadLine();
 
         if (string.IsNullOrEmpty(fileName))
@@ -97,7 +101,7 @@ class Program
         }
 
         string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-        string filePath = Path.Combine(downloadFolder, fileName);
+        string filePath = Path.Combine(downloadFolder, fileName + ".txt");
 
         if (!File.Exists(filePath))
         {
@@ -145,6 +149,7 @@ class Program
         Console.WriteLine("加密內容已儲存到 " + filePath);
         Console.WriteLine();
     }
+
 
     // 數字3
     static void PasteKeysAndDecryptData()
