@@ -22,7 +22,7 @@ namespace EncryptionLibrary
 				var dataToEncrypt = Encoding.UTF8.GetBytes(data);
 
 				// 使用公鑰加密資料，改用更安全的填充方案
-				var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
+				var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA512);
 
 				// 將加密後的資料轉換為 Base64 字串
 				return Convert.ToBase64String(encryptedData);
@@ -46,7 +46,7 @@ namespace EncryptionLibrary
 				var dataToDecrypt = Convert.FromBase64String(encryptedData);
 
 				// 使用私鑰解密資料，改用更安全的填充方案
-				var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
+				var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA512);
 
 				// 將解密後的資料轉換為字串
 				return Encoding.UTF8.GetString(decryptedData);

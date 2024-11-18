@@ -18,6 +18,7 @@ class Program
             Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
             Console.WriteLine("2. 使用匯入的金鑰加密內容");
             Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
+            Console.WriteLine("4. 貼上私鑰和密文進行解密");
             Console.WriteLine("0. 關閉程式");
             Console.Write("請輸入選項: ");
             string? choice = Console.ReadLine();
@@ -33,6 +34,9 @@ class Program
                 case "3":
                     PasteKeysAndDecryptData();
                     break;
+                case "4":
+                    PastePrivateKeyAndDecryptData();
+                    break;
                 case "0":
                     return;
                 default:
@@ -43,6 +47,7 @@ class Program
         }
     }
 
+    // 數字1
     static void GenerateAndExportRSAKeys()
     {
         using (var rsa = new RSACryptoServiceProvider(2048))
@@ -77,6 +82,7 @@ class Program
         }
     }
 
+    // 數字2
     static void ImportKeysAndEncryptData()
     {
         // 輸入下載資料夾中要匯入的txt檔案名稱
@@ -140,6 +146,7 @@ class Program
         Console.WriteLine();
     }
 
+    // 數字3
     static void PasteKeysAndDecryptData()
     {
         // 輸入公鑰和私鑰
@@ -153,6 +160,39 @@ class Program
         if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(privateKey))
         {
             Console.WriteLine("公鑰和私鑰不能為空");
+            Console.WriteLine();
+            return;
+        }
+
+        // 輸入已加密的內容
+        Console.WriteLine("請輸入已加密的內容:");
+        Console.WriteLine();
+        string? encryptedData = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(encryptedData))
+        {
+            Console.WriteLine("已加密的內容不能為空");
+            Console.WriteLine();
+            return;
+        }
+
+        // 解密
+        string decryptedData = RSAEncryption.Decrypt(encryptedData, privateKey);
+        Console.WriteLine($"解密後的內容: {decryptedData}");
+        Console.WriteLine();
+    }
+
+    // 數字4
+    static void PastePrivateKeyAndDecryptData()
+    {
+        // 輸入私鑰
+        Console.WriteLine("請貼上私鑰:");
+        privateKey = Console.ReadLine()?.Trim();
+        Console.WriteLine();
+
+        if (string.IsNullOrEmpty(privateKey))
+        {
+            Console.WriteLine("私鑰不能為空");
             Console.WriteLine();
             return;
         }
