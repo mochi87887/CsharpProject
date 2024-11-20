@@ -78,6 +78,7 @@ class Program
             sb.AppendLine();
             sb.AppendLine("私鑰:");
             sb.AppendLine(privateKey);
+            sb.AppendLine();
 
             File.WriteAllText(filePath, sb.ToString());
             Console.WriteLine("金鑰已儲存到 " + filePath);
@@ -85,7 +86,6 @@ class Program
         }
     }
 
-    // 數字2
     // 數字2
     static void ImportKeysAndEncryptData()
     {
@@ -135,6 +135,7 @@ class Program
 
         // 加密
         string encryptedData = RSAEncryption.Encrypt(data, publicKey);
+        Console.WriteLine();
         Console.WriteLine($"加密後的內容: {encryptedData}");
 
         // 將輸入的內容和加密後的內容寫入txt檔案
@@ -191,9 +192,9 @@ class Program
     static void PastePrivateKeyAndDecryptData()
     {
         // 輸入私鑰
+        Console.WriteLine();
         Console.WriteLine("請貼上私鑰:");
         privateKey = Console.ReadLine()?.Trim();
-        Console.WriteLine();
 
         if (string.IsNullOrEmpty(privateKey))
         {
@@ -203,8 +204,8 @@ class Program
         }
 
         // 輸入已加密的內容
-        Console.WriteLine("請輸入已加密的內容:");
         Console.WriteLine();
+        Console.WriteLine("請輸入已加密的內容:");
         string? encryptedData = Console.ReadLine();
 
         if (string.IsNullOrEmpty(encryptedData))
@@ -216,6 +217,7 @@ class Program
 
         // 解密
         string decryptedData = RSAEncryption.Decrypt(encryptedData, privateKey);
+        Console.WriteLine();
         Console.WriteLine($"解密後的內容: {decryptedData}");
         Console.WriteLine();
     }
