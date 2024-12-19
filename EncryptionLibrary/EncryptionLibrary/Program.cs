@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using EncryptionLibrary;
 
 class Program
@@ -15,10 +16,6 @@ class Program
         while (true)
         {
             Console.WriteLine("請選擇功能:");
-            //Console.WriteLine("1. 生成RSA金鑰並匯出成txt檔");
-            //Console.WriteLine("2. 使用匯入的金鑰加密內容");
-            //Console.WriteLine("3. 貼上公鑰私鑰並解密內容");
-            //Console.WriteLine("4. 貼上私鑰和密文進行解密");
             Console.WriteLine("1. 生成金鑰並匯出成txt檔");
             Console.WriteLine("2. 匯入檔案並加密內容");
             Console.WriteLine("4. 貼上私鑰和密文進行解密");
@@ -34,9 +31,6 @@ class Program
                 case "2":
                     ImportKeysAndEncryptData();
                     break;
-                //case "3":
-                //    PasteKeysAndDecryptData();
-                //    break;
                 case "4":
                     PastePrivateKeyAndDecryptData();
                     break;
@@ -100,6 +94,14 @@ class Program
             return;
         }
 
+        // 驗證檔案名稱是否只包含有效字元（字母、數字、底線和破折號）
+        if (!Regex.IsMatch(fileName, @"^[a-zA-Z0-9_-]+$"))
+        {
+            Console.WriteLine("檔案名稱包含無效字元");
+            Console.WriteLine();
+            return;
+        }
+
         string downloadFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
         string filePath = Path.Combine(downloadFolder, fileName + ".txt");
 
@@ -148,43 +150,6 @@ class Program
 
         File.AppendAllText(filePath, sb.ToString());
         Console.WriteLine("加密內容已儲存到 " + filePath);
-        Console.WriteLine();
-    }
-
-
-    // 數字3
-    static void PasteKeysAndDecryptData()
-    {
-        // 輸入公鑰和私鑰
-        Console.WriteLine("請貼上公鑰:");
-        publicKey = Console.ReadLine()?.Trim();
-        Console.WriteLine();
-        Console.WriteLine("請貼上私鑰:");
-        privateKey = Console.ReadLine()?.Trim();
-        Console.WriteLine();
-
-        if (string.IsNullOrEmpty(publicKey) || string.IsNullOrEmpty(privateKey))
-        {
-            Console.WriteLine("公鑰和私鑰不能為空");
-            Console.WriteLine();
-            return;
-        }
-
-        // 輸入已加密的內容
-        Console.WriteLine("請輸入已加密的內容:");
-        Console.WriteLine();
-        string? encryptedData = Console.ReadLine();
-
-        if (string.IsNullOrEmpty(encryptedData))
-        {
-            Console.WriteLine("已加密的內容不能為空");
-            Console.WriteLine();
-            return;
-        }
-
-        // 解密
-        string decryptedData = RSAEncryption.Decrypt(encryptedData, privateKey);
-        Console.WriteLine($"解密後的內容: {decryptedData}");
         Console.WriteLine();
     }
 
